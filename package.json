@@ -1,7 +1,7 @@
 {
-  "name": "dicebotchat",
-  "version": "1.0.0",
-  "description": "A Vue.js project",
+  "name": "browser-repl",
+  "version": "0.1.0",
+  "description": "Provides a Read-Eval-Print Loop console in the browser.",
   "author": "Andy Holland <github@ahweb.co.uk>",
   "private": true,
   "scripts": {
