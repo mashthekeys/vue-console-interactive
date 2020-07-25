@@ -3,7 +3,7 @@
     <ConsoleOutput
       ref="display"
       :style="{bottom: `${1.05 * userInputLines}em`}"
-      @keypress="focusAppend"
+      @keypress.native="focusAppend"
     ></ConsoleOutput>
     <div class="user">
       <span class="prompt">{{ prompt }}</span>
