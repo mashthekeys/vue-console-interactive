@@ -2,15 +2,21 @@
 
 >Provides a Read-Eval-Print Loop console in the browser
 
-## Demo usage
+## Interactive Demo
 
 ``` vue
 <ConsoleInteractive />
 ```
 
-Echoes user input into the command log.
+>Echoes user input into an on-screen console.
 
+## Browser Console Demo
 
+``` vue
+<ConsoleOutput mount-global />
+```
+
+>Integrates `window.console` with the on-screen console.
 
 
 ## Build Setup
