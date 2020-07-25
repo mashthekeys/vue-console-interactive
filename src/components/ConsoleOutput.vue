@@ -1,10 +1,11 @@
 <template>
   <div class="ConsoleOutput"
+       tabindex="-1"
        @scroll="onScrollEnd"
        @touchstart="onScrollStart"
        @wheel="onScrollStart"
   >
-    <div :class="{outer: true, scrolling}" tabindex="-1">
+    <div :class="{outer: true, scrolling}">
       <div class="inner">
         <output
           v-for="($item, index) in consoleOutput"
@@ -25,6 +26,27 @@
     mixins: [
       {methods: consolePrinter}
     ],
+
+    props: {
+      mountGlobal: {
+        type: Boolean
+      },
+    },
+
+    mounted() {
+      if (this.mountGlobal) {
+        this.$nextConsole = window.console;
+        window.console = this;
+      }
+    },
+
+    destroyed() {
+      if (this.mountGlobal && this.$nextConsole) {
+        window.console = this.$nextConsole;
+
+        this.$nextConsole = undefined;
+      }
+    },
 
     data() {
       return {
@@ -168,6 +190,8 @@
 
       mix-blend-mode: multiply;
 
+      opacity: 0.8;
+
       pointer-events: none;
     }
   }
@@ -199,94 +223,14 @@
 
   output.faded { opacity: 0.55; }
 
-  output.white { z-index: 1; color: whitesmoke; }
-
-  div.user {
-    position: fixed;
-
-    display: flex;
-
-    z-index: 2;
-    width: 100%;
-    bottom: 0;
-
-    background: hsl(0, 0%, 4%);
-  }
-
-  span.prompt {
-    display: block;
-
-    flex-grow: 0;
-
-    color: hsl(55, 100%, 85%);
-  }
-
-  textarea {
-    flex-grow: 1;
-    resize: none;
-
-    vertical-align: text-top;
-
-    font-size: inherit;
-    font-family: monospace;
-
-    border: none;
-    background: hsl(0, 0%, 4%);
-    color: hsl(55, 100%, 75%);
-    caret-color: hsl(0, 0%, 50%);
-
-    overflow-y: hidden;
-  }
-
-  textarea:focus {
-    outline: none;
-  }
-
-  textarea::placeholder {
-    color: hsl(0, 0%, 20%);
-    opacity: 1;
-  }
-
-  textarea:focus::placeholder {
-    color: hsl(55, 100%, 50%);
-  }
-
-  textarea:focus:placeholder-shown {
-    animation: BrowserREPL_blink step-end infinite 2s;
-  }
-
-  @keyframes BrowserREPL_blink {
-    from {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.1;
-    }
-  }
-
-  textarea::selection {
-    background: hsl(0, 0%, 90%);
-    color: hsl(280, 0%, 10%);
-  }
-
-  button[name=execute] {
-    flex-grow: 0;
-
-    font: inherit;
-
-    min-width: 1.5em;
-
-    background: hsl(0, 0%, 4%);
-    color: hsl(55, 100%, 50%);
-
-    border: dotted 0.05em;
-    border-radius: 0.15em;
-  }
-
-  button[name=execute]:active,
-  button[name=execute]:focus {
-    border-style: solid;
-    outline: none;
-  }
+  output.count,
+  output.info,
+  output.timer { color: white; }
+  output.debug { color: gray; }
+  output.error { color: orangered; }
+  /*output.log { }*/
+  /*output.dir { }*/
+  /*output.dirxml { }*/
+  output.warn { color: gold; }
 
 </style>
