@@ -4,6 +4,7 @@
   "description": "Provides a browser-based console for output or interactive Read-Eval-Print loop.",
   "author": "Andy Holland <github@ahweb.co.uk>",
   "license": "MIT",
+  "homepage": "https://github.com/mashthekeys/vue-console-interactive#readme",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
