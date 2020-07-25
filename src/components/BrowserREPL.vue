@@ -10,8 +10,9 @@
     >
       <output :style="{paddingBottom: `${1.0 * userInputLines}em`}">
         <pre
-          v-for="$item in consoleOutput"
-          :class="$item.class"
+          v-for="($item, index) in consoleOutput"
+          :key="index"
+          :class="$item.type"
         >{{ typeof $item.label !== 'undefined' ? $item.label : $item }}</pre>
       </output>
     </div>
@@ -35,8 +36,14 @@
 </template>
 
 <script>
+  import consolePrinter from "../consolePrinter";
+
   export default {
     name: "BrowserREPL",
+
+    mixins: [
+      {methods: consolePrinter}
+    ],
 
     props: {
       evalFunction: {
@@ -88,6 +95,10 @@
     },
 
     methods: {
+      clear() {
+        this.$set(this, 'consoleOutput', []);
+      },
+
       async 'eval'(command) {
         return this.print(await this.evalFunction(command));
       },
@@ -129,7 +140,7 @@
           if (this.printCommands) {
             await this.print({
               label: `${this.prompt}${input.raw}`,
-              class: 'command'
+              type: 'command'
             });
           }
 
@@ -153,7 +164,7 @@
         }
       },
 
-      onScrollEnd($event) {
+      onScrollEnd(/*$event*/) {
         if (!this.scrolling) return;
 
         const $el = this.$el;
