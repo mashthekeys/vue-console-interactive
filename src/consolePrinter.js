@@ -19,7 +19,8 @@ function _IgnoreStyles() {
 }
 
 function _Integer(value, precision) {
-  const string = BigInt(value).toString();
+  const string = Math.floor(value).toString();
+
   return (precision
           ? string.padStart(precision, '0')
           : string
@@ -33,7 +34,7 @@ function _Number(value, precision) {
   )
 }
 
-function _Object(value, precision) {
+function _Object(value) {
   try {
     return JSON.stringify(value, null, 2);
   } catch (conversionError) {
@@ -49,7 +50,7 @@ export default {
     }
   },
 
-  assert(test, errorMessage/*, ...rest*/) {
+  assert(test/*, errorMessage, ...rest*/) {
     if (!test) {
       this.printSubstitution([].slice.call(arguments, 1), {type: 'assert error'});
     }
