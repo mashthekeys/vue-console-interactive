@@ -1,4 +1,4 @@
-# browser-repl
+# basic-console
 
 >Provides a Read-Eval-Print Loop console in the browser
 
