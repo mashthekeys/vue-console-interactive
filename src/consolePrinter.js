@@ -42,10 +42,19 @@ function _Object(value, precision) {
 }
 
 export default {
+  $chainConsole(method, args) {
+    const $nextConsole = this.$nextConsole;
+    if ($nextConsole) {
+      $nextConsole[method].apply($nextConsole, args);
+    }
+  },
+
   assert(test, errorMessage/*, ...rest*/) {
     if (!test) {
       this.printSubstitution([].slice.call(arguments, 1), {type: 'assert error'});
     }
+
+    this.$chainConsole('assert', arguments);
   },
 
   count(label) {
@@ -62,6 +71,8 @@ export default {
     this.print(`${label}: ${counter[label]}`, {
       type: 'count'
     });
+
+    this.$chainConsole('count', arguments);
   },
 
   countReset(label) {
@@ -78,14 +89,20 @@ export default {
     this.print(`${label}: ${0}`, {
       type: 'count reset'
     });
+
+    this.$chainConsole('countReset', arguments);
   },
 
   debug(/*...rest*/) {
     this.printSubstitution(arguments, {type: "debug"});
+
+    this.$chainConsole('debug', arguments);
   },
 
   dir(object) {
     this.printSubstitution(["%o", object], {type: "dir"})
+
+    this.$chainConsole('dir', arguments);
   },
 
   dirxml(object) {
@@ -96,6 +113,8 @@ export default {
     } else {
       this.printSubstitution(["%o", object], {type: "dirxml json"});
     }
+
+    this.$chainConsole('dirxml', arguments);
   },
 
   error(/*...rest*/) {
@@ -107,14 +126,20 @@ export default {
     } else {
       this.printSubstitution(arguments, {type: "error"});
     }
+
+    this.$chainConsole('error', arguments);
   },
 
   info(/*...rest*/) {
     this.printSubstitution(arguments, {type: "info"});
+
+    this.$chainConsole('info', arguments);
   },
 
   log(/*...rest*/) {
     this.printSubstitution(arguments, {type: "log"});
+
+    this.$chainConsole('log', arguments);
   },
 
   printSubstitution(items, printProps) {
@@ -168,6 +193,8 @@ export default {
         ($consoleProps.timers = {});
 
     timers[label] = Date.now();
+
+    this.$chainConsole('time', arguments);
   },
 
   timeEnd(label) {
@@ -190,6 +217,8 @@ export default {
     } else {
       this.warn(`No timer named ${label}`);
     }
+
+    this.$chainConsole('timeEnd', arguments);
   },
 
   timeLog(label) {
@@ -210,13 +239,19 @@ export default {
     } else {
       this.warn(`No timer named ${label}`);
     }
+
+    this.$chainConsole('timeLog', arguments);
   },
 
   trace() {
     this.printTrace(new EvalError('Stack trace requested'), {type: 'trace'});
+
+    this.$chainConsole('trace', arguments);
   },
 
   warn(/*...rest*/) {
     this.printSubstitution(arguments, {type: "warn"});
+
+    this.$chainConsole('warn', arguments);
   }
 };
