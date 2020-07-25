@@ -4,15 +4,17 @@
        @touchstart="onScrollStart"
        @wheel="onScrollStart"
   >
-    <output
-      :style="{paddingBottom: `${1.0 * userInputLines}em`}"
-      @keypress="focus"
+    <div class="scrollBody"
+         tabindex="-1"
+         @keypress="focusAppend"
     >
-      <pre
-        v-for="$item in consoleOutput"
-        :class="$item.class"
-      >{{ typeof $item.label !== 'undefined' ? $item.label : $item }}</pre>
-    </output>
+      <output :style="{paddingBottom: `${1.0 * userInputLines}em`}">
+        <pre
+          v-for="$item in consoleOutput"
+          :class="$item.class"
+        >{{ typeof $item.label !== 'undefined' ? $item.label : $item }}</pre>
+      </output>
+    </div>
     <div class="user">
       <span class="prompt">{{ prompt }}</span>
       <textarea
@@ -90,6 +92,12 @@
         return this.print(await this.evalFunction(command));
       },
 
+      focusAppend($event) {
+        this.userInput += $event.key;
+
+        this.focus();
+      },
+
       focus() {
         const textAreaElement = this.$refs.textarea;
         textAreaElement && textAreaElement.focus();
@@ -103,8 +111,6 @@
         const command = this.userInput;
 
         const slashAtEnd = /\\$/.test(command);
-
-        // console.log('onEnter', {command, atEnd, slashAtEnd});
 
         if (atEnd && !slashAtEnd) {
           this.onEval($event);
@@ -196,62 +202,107 @@
 
     text-align: left;
 
-    background: hsl(280, 0%, 10%);
+    background: black;
 
-    color: hsl(210, 98%, 90%);
+    color: hsl(0, 0%, 90%);
 
     font-size: 36px;
     font-family: monospace;
     line-height: 1.0;
   }
 
-  div.console::before {
-    content: '';
-    display: block;
-    width: 100%;
-    height: calc(100% - 2em);
-  }
-
-  output {
-    display: block;
-
+  div.scrollBody {
     position: fixed;
     bottom: 0.1em;
 
     width: 100%;
+    min-height: 100%;
 
-    margin: 0;
-    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 
     touch-action: pan-y;
 
-/*
-    background: linear-gradient(-70deg, gold 0%, orange 10%, darkmagenta 70%, black 100%)
-      left top/100vw 200vh;
-*/
+    background: black;
   }
 
-  div.scrolling > output {
+  div.scrolling > div.scrollBody {
     position: relative;
   }
 
+  output {
+    position: relative;
+
+    width: 100%;
+    min-height: 100%;
+
+    margin: 0;
+    padding: 0;
+  }
+
+
+  @supports (mix-blend-mode: multiply) {
+    output::after {
+      content: '';
+      display: block;
+
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+
+      background: linear-gradient(10deg,
+        hsl(51, 100%, 50%) 0%,
+        hsl(39, 100%, 50%) 10%,
+        hsl(300, 100%, 65%) 70%,
+        hsl(220, 100%, 65%) 100%
+      )
+      left bottom/100% 300vh;
+
+      mix-blend-mode: multiply;
+
+      pointer-events: none;
+    }
+  }
+  @supports (z-index: max(0, 1)) {
+    output::after {
+      background-size: 100% max(100%, 300vh);
+    }
+  }
+
   pre {
+    position: relative;
+
     width: 100%;
 
     margin: 0 0 0.05em 0;
-    border-bottom: solid lightcyan 0.333px;
-    padding: 0.05em 0 0 0;
+    border-bottom: solid hsla(0, 0%, 50%, 0.4) 1px;
+    padding: 0.05em 0 0.1em 0;
+
+    white-space: pre-wrap;
+
+    opacity: 0.999;
   }
 
   pre.command {
-    color: gray;
+    border-bottom: 0;
+    padding-bottom: 0;
+
+    opacity: 0.55;
   }
+
+  pre.faded { opacity: 0.55; }
+
+  pre.white { z-index: 1; color: whitesmoke; }
 
   div.user {
     position: fixed;
 
     display: flex;
 
+    z-index: 2;
     width: 100%;
     bottom: 0;
 
