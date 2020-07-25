@@ -282,8 +282,6 @@
     padding: 0.05em 0 0.1em 0;
 
     white-space: pre-wrap;
-
-    opacity: 0.999;
   }
 
   pre.command {
