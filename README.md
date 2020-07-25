@@ -1,6 +1,24 @@
-# webpack
+# browser-repl
 
-> A Vue.js project
+>Provides a Read-Eval-Print Loop console in the browser
+
+## Demo usage
+
+``` vue
+<BrowserREPL />
+```
+
+Echoes user input into the command log.
+
+## Extended usage
+
+``` vue
+<BrowserREPL
+  :eval-function="command => alert(command)"
+/>
+```
+
+
 
 ## Build Setup
 
@@ -17,5 +35,3 @@ npm run build
 # build for production and view the bundle analyzer report
 npm run build --report
 ```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
