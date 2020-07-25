@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import BrowserREPL from '@/components/BrowserREPL'
+import ConsoleInteractive from '@/components/ConsoleInteractive'
 
 Vue.use(Router)
 
@@ -8,8 +8,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'BrowserREPL',
-      component: BrowserREPL
+      name: 'ConsoleInteractive',
+      component: ConsoleInteractive
     }
   ]
 })

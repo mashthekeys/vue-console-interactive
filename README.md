@@ -5,18 +5,11 @@
 ## Demo usage
 
 ``` vue
-<BrowserREPL />
+<ConsoleInteractive />
 ```
 
 Echoes user input into the command log.
 
-## Extended usage
-
-``` vue
-<BrowserREPL
-  :eval-function="command => alert(command)"
-/>
-```
 
 
 

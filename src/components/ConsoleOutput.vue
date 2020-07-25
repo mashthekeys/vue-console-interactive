@@ -1,36 +1,17 @@
 <template>
-  <div :class="{console: true, scrolling}"
+  <div class="ConsoleOutput"
        @scroll="onScrollEnd"
        @touchstart="onScrollStart"
        @wheel="onScrollStart"
   >
-    <div class="outer"
-         tabindex="-1"
-         @keypress="focusAppend"
-    >
-      <div class="inner" :style="{paddingBottom: `${1.0 * userInputLines}em`}">
+    <div :class="{outer: true, scrolling}" tabindex="-1">
+      <div class="inner">
         <output
           v-for="($item, index) in consoleOutput"
           :key="index"
           :class="$item.type"
-        >{{ typeof $item.label !== 'undefined' ? $item.label : $item }}</output>
+        >{{ $item.message }}</output>
       </div>
-    </div>
-    <div class="user" v-if="allowInput">
-      <span class="prompt">{{ prompt }}</span>
-      <textarea
-        ref="textarea"
-        v-model="userInput"
-        placeholder="█"
-        :style="{height: `${1.0 * userInputLines}em`}"
-        @keydown.enter="onEnter"
-      ></textarea>
-      <button
-        type="button"
-        name="execute"
-        :style="{color: userInput.length ? void 0 : 'gray'}"
-        @click="onEval"
-      >{{evalLabel}}</button>
     </div>
   </div>
 </template>
@@ -39,117 +20,23 @@
   import consolePrinter from "../consolePrinter";
 
   export default {
-    name: "BrowserREPL",
+    name: "ConsoleOutput",
     
     mixins: [
       {methods: consolePrinter}
     ],
 
-    props: {
-      allowInput: {
-        type: Boolean,
-        default: true
-      },
-      evalFunction: {
-        type: Function,
-        default: async function evalFunction(command) {
-          return command;
-        }
-      },
-      evalLabel: {
-        type: String,
-        default: '↲'
-      },
-      print: {
-        type: Function,
-        default: async function print(output) {
-          this.consoleOutput.push(output);
-          this.scrolling = false;
-        }
-      },
-      printCommands: {
-        type: Boolean,
-        default: true,
-      },
-      prompt: {
-        type: String,
-        default: "echo\xa0"
-      },
-      read: {
-        type: Function,
-        default: async function read() {
-          const raw = this.userInput;
-
-          const command = raw.replace(/\\\n/g, "\n");
-
-          this.userInput = '';
-
-          return {raw, command};
-        }
-      },
-    },
-
     data() {
       return {
         consoleOutput: [],
         scrolling: false,
-        scrollSnapThreshold: 4,
-        userInput: ''
+        scrollSnapThreshold: 4
       }
     },
 
     methods: {
       clear() {
         this.$set(this, 'consoleOutput', []);
-      },
-
-      async 'eval'(command) {
-        return this.print(await this.evalFunction(command));
-      },
-
-      focusAppend($event) {
-        this.userInput += $event.key;
-
-        this.focus();
-      },
-
-      focus() {
-        const textAreaElement = this.$refs.textarea;
-        textAreaElement && textAreaElement.focus();
-      },
-
-      onEnter($event) {
-        const target = $event.target;
-
-        const atEnd = target.selectionStart >= target.value.length;
-
-        const command = this.userInput;
-
-        const slashAtEnd = /\\$/.test(command);
-
-        if (atEnd && !slashAtEnd) {
-          this.onEval($event);
-        }
-      },
-
-      async onEval($event) {
-        $event.preventDefault();
-        $event.stopImmediatePropagation();
-
-        const input = await this.read();
-
-        this.focus();
-
-        if (input.command.length) {
-          if (this.printCommands) {
-            await this.print({
-              label: `${this.prompt}${input.raw}`,
-              type: 'command'
-            });
-          }
-
-          return this.eval(input.command);
-        }
       },
 
       onScrollStart($event) {
@@ -181,13 +68,13 @@
           this.scrolling = false;
         }
       },
+
+      print(message, messageProps) {
+        this.consoleOutput.push(Object.assign({}, messageProps, {message}, ));
+        this.scrolling = false;
+      },
     },
 
-    computed: {
-      userInputLines() {
-        return (this.userInput.match(/\n/g) || []).length + 1;
-      }
-    },
     watch: {
       scrolling(value) {
         if (value) this.$nextTick(() => {
@@ -205,7 +92,7 @@
     box-sizing: border-box;
   }
 
-  div.console {
+  div.ConsoleOutput {
     position: relative;
 
     margin: 0;
@@ -223,7 +110,10 @@
 
     font-size: 36px;
     font-family: monospace;
-    line-height: 1.0;
+    line-height: 1.05;
+
+    /* Transform makes this the containing block */
+    transform: scale(1);
   }
 
   div.outer {
@@ -242,7 +132,7 @@
     background: black;
   }
 
-  div.scrolling > div.outer {
+  div.outer.scrolling {
     position: relative;
   }
 
