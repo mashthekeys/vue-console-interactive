@@ -4,19 +4,19 @@
        @touchstart="onScrollStart"
        @wheel="onScrollStart"
   >
-    <div class="scrollBody"
+    <div class="outer"
          tabindex="-1"
          @keypress="focusAppend"
     >
-      <output :style="{paddingBottom: `${1.0 * userInputLines}em`}">
-        <pre
+      <div class="inner" :style="{paddingBottom: `${1.0 * userInputLines}em`}">
+        <output
           v-for="($item, index) in consoleOutput"
           :key="index"
           :class="$item.type"
-        >{{ typeof $item.label !== 'undefined' ? $item.label : $item }}</pre>
-      </output>
+        >{{ typeof $item.label !== 'undefined' ? $item.label : $item }}</output>
+      </div>
     </div>
-    <div class="user">
+    <div class="user" v-if="allowInput">
       <span class="prompt">{{ prompt }}</span>
       <textarea
         ref="textarea"
@@ -40,12 +40,16 @@
 
   export default {
     name: "BrowserREPL",
-
+    
     mixins: [
       {methods: consolePrinter}
     ],
 
     props: {
+      allowInput: {
+        type: Boolean,
+        default: true
+      },
       evalFunction: {
         type: Function,
         default: async function evalFunction(command) {
@@ -222,7 +226,7 @@
     line-height: 1.0;
   }
 
-  div.scrollBody {
+  div.outer {
     position: fixed;
     bottom: 0.1em;
 
@@ -238,11 +242,11 @@
     background: black;
   }
 
-  div.scrolling > div.scrollBody {
+  div.scrolling > div.outer {
     position: relative;
   }
 
-  output {
+  div.inner {
     position: relative;
 
     width: 100%;
@@ -254,7 +258,7 @@
 
 
   @supports (mix-blend-mode: multiply) {
-    output::after {
+    div.inner::after {
       content: '';
       display: block;
 
@@ -278,12 +282,13 @@
     }
   }
   @supports (z-index: max(0, 1)) {
-    output::after {
+    div.inner::after {
       background-size: 100% max(100%, 300vh);
     }
   }
 
-  pre {
+  output {
+    display: block;
     position: relative;
 
     width: 100%;
@@ -295,16 +300,16 @@
     white-space: pre-wrap;
   }
 
-  pre.command {
+  output.command {
     border-bottom: 0;
     padding-bottom: 0;
 
     opacity: 0.55;
   }
 
-  pre.faded { opacity: 0.55; }
+  output.faded { opacity: 0.55; }
 
-  pre.white { z-index: 1; color: whitesmoke; }
+  output.white { z-index: 1; color: whitesmoke; }
 
   div.user {
     position: fixed;
