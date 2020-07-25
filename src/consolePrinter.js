@@ -145,25 +145,27 @@ export default {
   printSubstitution(items, printProps) {
     items = Array.from(items);
 
-    const source = items.shift();
+    if (typeof items[0] === 'string') {
+      const source = items.shift();
 
-    const localFormatters = (this.$consoleProps && this.$consoleProps.formatters) || formatters;
+      const localFormatters = (this.$consoleProps && this.$consoleProps.formatters) || formatters;
 
-    const message = source.replace(/%(\.?)([0-9]*)([A-Za-z%])/g, (match, dot, precision, format) => {
-      if (match === '%%') return '%';
+      const message = source.replace(/%(\.?)([0-9]*)([A-Za-z%])/g, (match, dot, precision, format) => {
+        if (match === '%%') return '%';
 
-      const formatter = localFormatters[format];
+        const formatter = localFormatters[format];
 
-      if (typeof formatter !== 'function') {
-        return match;
-      } else {
-        const value = items.shift();
+        if (typeof formatter !== 'function') {
+          return match;
+        } else {
+          const value = items.shift();
 
-        return formatter(value, precision, format);
-      }
-    });
+          return formatter(value, precision, format);
+        }
+      });
 
-    items.unshift(message);
+      items.unshift(message);
+    }
 
     this.print(items.join(" "), printProps);
   },
@@ -175,8 +177,8 @@ export default {
       this.print(error.stack, printProps);
 
     } else {
-      const aboutError = ((typeof error === 'object' && error !== null)
-              ? {}.toString.call(error)
+      const aboutError = ((error != null && error.constructor && error.constructor.name)
+              ? error.constructor.name
               : typeof error
       );
       this.print(aboutError, printProps);
@@ -211,7 +213,7 @@ export default {
 
       delete timers[label];
 
-      this.print(`${label}: ${timeElapsed} (End)`, {
+      this.print(`[Timer] ${label}: ${timeElapsed}ms [End]`, {
         type: 'timer reset'
       });
     } else {
@@ -233,7 +235,7 @@ export default {
     if (label in timers) {
       const timeElapsed = Date.now() - timers[label];
 
-      this.print(`${label}: ${timeElapsed}ms`, {
+      this.print(`[Timer] ${label}: ${timeElapsed}ms`, {
         type: 'timer'
       });
     } else {
