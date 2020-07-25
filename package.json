@@ -1,7 +1,7 @@
 {
-  "name": "basic-console",
-  "version": "0.2.0",
-  "description": "Provides a Read-Eval-Print Loop console in the browser.",
+  "name": "vue-console-interactive",
+  "version": "0.3.0",
+  "description": "Provides a browser-based console for output or interactive Read-Eval-Print loop.",
   "author": "Andy Holland <github@ahweb.co.uk>",
   "license": "MIT",
   "scripts": {

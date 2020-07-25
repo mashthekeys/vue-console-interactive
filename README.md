@@ -1,4 +1,4 @@
-# basic-console
+# vue-console-interactive
 
 >Provides a Read-Eval-Print Loop console in the browser
 
